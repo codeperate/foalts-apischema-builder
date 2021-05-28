@@ -1,2 +1,2 @@
 export * from './schema-service';
-export * from './apischema'
+export * from './apischema';

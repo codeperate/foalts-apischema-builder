@@ -1,9 +1,7 @@
 import { IApiReference, IApiSchema } from "@foal/core";
 import { classToClass, classToPlain, plainToClass } from "class-transformer";
-import { set } from 'lodash';
-import { AutoPath } from "ts-toolbelt/out/Function/AutoPath";
 import { ApiSchemaModel } from "./apischema-model";
-export class ApiSchema<T = any> extends ApiSchemaModel {
+export class ApiSchema<T> extends ApiSchemaModel {
     static parse<T>(plainObj: IApiSchema): ApiSchema<T> {
         return plainToClass(ApiSchema, plainObj)
     }
@@ -30,7 +28,7 @@ export class ApiSchema<T = any> extends ApiSchemaModel {
             schema.required = required;
         return schema;
     }
-    omit(props: (keyof T)[] | RegExp, removeRequired: boolean = true): ApiSchema {
+    omit(props: (keyof T)[] | RegExp, removeRequired: boolean = true): ApiSchema<T> {
         const schema = classToClass(this);
         if (!schema.properties)
             return schema;
@@ -47,7 +45,7 @@ export class ApiSchema<T = any> extends ApiSchemaModel {
             schema.required = required;
         return schema;
     }
-    noRef(removeRequired: boolean = true): ApiSchema {
+    noRef(removeRequired: boolean = true): ApiSchema<T> {
         const schema = classToClass(this);
         const keyArr: string[] = [];
         if (!schema.properties)
@@ -57,22 +55,25 @@ export class ApiSchema<T = any> extends ApiSchemaModel {
                 return { ...reducer, [key]: schema.properties![key] }
             keyArr.push(key);
             return reducer;
-        }, {})
+        }, {} as any)
         if (schema.required && removeRequired)
             schema.required = schema.required.filter((str) => !keyArr.includes(str))
         return schema
     }
-    set<P extends string>(path: AutoPath<ApiSchema<T>, P>, value: any | ((curVal: any) => any)): ApiSchema<T> {
+    set(key: keyof ApiSchemaModel, value: any | ((curVal: any) => any)): ApiSchema<T> {
         const schema = classToClass(this);
-        set(schema, path, value);
+        if (typeof value === "function")
+            schema[key] = value(schema[key])
+        else
+            schema[key] = value;
         return schema;
     }
     setProp(key: keyof T, value: (IApiReference | IApiSchema) | ((curVal: IApiSchema | IApiReference) => (IApiReference | IApiSchema))): ApiSchema<T> {
         const schema = classToClass(this);
         if (typeof value === "function")
-            schema.properties![(key as any)] = value(schema.properties![(key as any)])
+            schema.properties![(key as string)] = value(schema.properties![(key as any)])
         else
-            schema.properties![(key as any)] = value
+            schema.properties![(key as string)] = value
         return schema;
     }
     props(): (keyof T)[] {
