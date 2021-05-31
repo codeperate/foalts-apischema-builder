@@ -1,4 +1,4 @@
-import { Class, IApiSchema } from "@foal/core";
+import { ApiDefineSchema, Class, IApiSchema } from "@foal/core";
 import { plainToClass } from "class-transformer";
 const defaultMetadataStorage = require("class-transformer/cjs/storage");
 import { ValidationTypes } from "class-validator";
@@ -45,5 +45,10 @@ export class SchemaService {
     }
     deRef<T>(ref: string, path: string = "entity"): ApiSchema<T> {
         return this.schemas[path]![ref.replace(this.ref, "")]
+    }
+    defineAllSchemas(target: Class, path: string = "entity") {
+        for (const key in this.schemas[path]) {
+            ApiDefineSchema(key, this.schemas[path][key])(target)
+        }
     }
 }
