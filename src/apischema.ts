@@ -1,7 +1,7 @@
 import { IApiReference, IApiSchema } from "@foal/core";
 import { classToClass, classToPlain, plainToClass } from "class-transformer";
 import { ApiSchemaModel } from "./apischema-model";
-export class ApiSchema<T> extends ApiSchemaModel {
+export class ApiSchema<T = any> extends ApiSchemaModel {
     static parse<T>(plainObj: IApiSchema): ApiSchema<T> {
         return plainToClass(ApiSchema, plainObj)
     }

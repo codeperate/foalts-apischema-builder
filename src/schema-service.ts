@@ -4,9 +4,12 @@ const defaultMetadataStorage = require("class-transformer/cjs/storage");
 import { ValidationTypes } from "class-validator";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import { ApiSchema } from "./apischema";
-export type SchemaCollection = { [key: string]: ApiSchema<any> }
+export type SchemaCollection = { [key: string]: ApiSchema }
+export type SchemaCollections = {
+    [key: string]: SchemaCollection
+}
 export class SchemaService {
-    schemas: SchemaCollection = {}
+    schemas: SchemaCollections = {}
     constructor(public ref: string = "#/components/schemas/") {
 
     }
@@ -23,19 +26,24 @@ export class SchemaService {
             }) as { [key: string]: IApiSchema }
         }
         for (const [key, value] of Object.entries(schemas)) {
-            this.schemas[key] = plainToClass(ApiSchema, value);
+            this.schemas["entity"]![key] = plainToClass(ApiSchema, value);
         }
     }
-    get<T>(ClassOrString: Class<T> | string): ApiSchema<T> {
+    transform(fn: (key: string, value: ApiSchema) => ApiSchema, path: string = "entity") {
+        for (const [key, value] of Object.entries(this.schemas["entity"]!)) {
+            this.schemas[path]![key] = fn(key, value.copy())
+        }
+    }
+    get<T>(ClassOrString: Class<T> | string, path: string = "entity"): ApiSchema<T> {
         if (typeof ClassOrString == "string")
-            return this.schemas[ClassOrString]
+            return this.schemas[path]![ClassOrString]
         else
-            return this.schemas[ClassOrString.name]
+            return this.schemas[path]![ClassOrString.name]
     }
-    getAll(): SchemaCollection {
-        return this.schemas;
+    getAll(path: string = "entity"): SchemaCollection {
+        return this.schemas[path]!;
     }
-    deRef<T>(ref: string): ApiSchema<T> {
-        return this.schemas[ref.replace(this.ref, "")]
+    deRef<T>(ref: string, path: string = "entity"): ApiSchema<T> {
+        return this.schemas[path]![ref.replace(this.ref, "")]
     }
 }
