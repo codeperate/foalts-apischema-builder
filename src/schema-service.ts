@@ -1,6 +1,6 @@
 import { ApiDefineSchema, Class, IApiSchema } from "@foal/core";
 import { plainToClass } from "class-transformer";
-const defaultMetadataStorage = require("class-transformer/cjs/storage");
+const storage = require("class-transformer/cjs/storage");
 import { ValidationTypes } from "class-validator";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import { ApiSchema } from "./apischema";
@@ -9,14 +9,14 @@ export type SchemaCollections = {
     [key: string]: SchemaCollection
 }
 export class SchemaService {
-    schemas: SchemaCollections = {}
+    schemas: SchemaCollections = { entity: {} }
     constructor(public ref: string = "#/components/schemas/") {
 
     }
     async boot(schemas: { [key: string]: IApiSchema }) {
         if (!schemas) {
             schemas = validationMetadatasToSchemas({
-                classTransformerMetadataStorage: defaultMetadataStorage,
+                classTransformerMetadataStorage: storage.defaultMetadataStorage,
                 refPointerPrefix: this.ref,
                 additionalConverters: {
                     [ValidationTypes.CONDITIONAL_VALIDATION]: {
@@ -30,6 +30,8 @@ export class SchemaService {
         }
     }
     transform(fn: (key: string, value: ApiSchema) => ApiSchema, path: string = "entity") {
+        if (!this.schemas[path])
+            this.schemas[path] = {}
         for (const [key, value] of Object.entries(this.schemas["entity"]!)) {
             this.schemas[path]![key] = fn(key, value.copy())
         }
