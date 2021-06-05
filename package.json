@@ -1,6 +1,6 @@
 {
   "name": "@codeperate/foalts-apischema-builder",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A small library that helps you build ApiSchema for foalTS.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
