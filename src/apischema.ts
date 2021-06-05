@@ -68,12 +68,14 @@ export class ApiSchema<T = any> extends ApiSchemaModel {
             schema[key] = value;
         return schema;
     }
-    setProp(key: keyof T, value: (IApiReference | IApiSchema) | ((curVal: IApiSchema | IApiReference) => (IApiReference | IApiSchema))): ApiSchema<T> {
+    setProp(key: Extract<keyof T, string>, value: (IApiReference | IApiSchema) | ((curVal: IApiSchema | IApiReference) => (IApiReference | IApiSchema))): ApiSchema<T> 
+    setProp(key: string, value: (IApiReference | IApiSchema) | ((curVal: IApiSchema | IApiReference) => (IApiReference | IApiSchema))): ApiSchema<T>
+    setProp(key: string, value: (IApiReference | IApiSchema) | ((curVal: IApiSchema | IApiReference) => (IApiReference | IApiSchema))): ApiSchema<T> {
         const schema = classToClass(this);
         if (typeof value === "function")
-            schema.properties![(key as string)] = value(schema.properties![(key as any)])
+            schema.properties![key] = value(schema.properties![key])
         else
-            schema.properties![(key as string)] = value
+            schema.properties![key] = value
         return schema;
     }
     props(): (keyof T)[] {
