@@ -3,7 +3,7 @@
 A small library that helps you to build ApiSchema for foalTS with builder pattern.
 
 ## Getting Started
-1. This library use class validator metadata storage to convert your database entity to json schema, therefore you need validation decorators in your entity.
+1. This library use class validator metadata storage to convert your database entity to json schema, therefore you need validation decorators in your entity. Although this lib is agnostic between orms, the examples below are using foalts with Mikro-orm.
 ```
 import { IsDate, IsString } from 'class-validator';
 
@@ -72,4 +72,20 @@ export class SomeEntity {
   ```
     @JSONResponse(200, (c: SomeController) => c.ss.get(SomeEntity).pick(["prop1","prop2"]))
   ```
+
+# More
+You can add more predefined schema as you like, for example:
+```
+   schemaService.transform((key, value) => {
+    if (orm.getMetadata().has(key)) {
+      const primaryKeys = orm.getMetadata().get(key).primaryKeys
+      return value.omit(primaryKeys)
+    }
+    return value;
+  }, "post")
+```
+A schema for post body without primary key will be created and you can access it with:
+```
+    schemaService.get(SomeEntity,"post")
+```
   
