@@ -26,6 +26,7 @@ export class SchemaService {
     this.set(schemas);
   }
   set(schemas: { [key: string]: IApiSchema }, path: string = "entity") {
+    if (!this.schemas[path]) this.schemas[path] = {};
     for (const [key, value] of Object.entries(schemas)) {
       this.schemas[path]![key] = plainToClass(ApiSchema, value);
     }
