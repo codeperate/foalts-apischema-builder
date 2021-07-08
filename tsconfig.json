@@ -9,6 +9,7 @@
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "sourceMap": false,
+    "noImplicitAny": false,
     "declaration": true,
     "rootDir": "src",
     "lib": [
