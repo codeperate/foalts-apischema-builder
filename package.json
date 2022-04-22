@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "release": "np"
+    "release": "np",
+    "test":""
   },
   "repository": {
     "type": "git",
