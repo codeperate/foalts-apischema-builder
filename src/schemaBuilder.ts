@@ -15,7 +15,7 @@ export function parse(schema: IApiSchemaCollection): SchemaCollection {
     return res;
 }
 
-export function postParse(schema: SchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection {
+export function postParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection {
     let res: SchemaCollection = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
@@ -24,7 +24,7 @@ export function postParse(schema: SchemaCollection, primaryKeys: PrimaryKeyColle
     return res;
 }
 
-export function patchParse(schema: SchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection {
+export function patchParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection {
     let res: SchemaCollection = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
