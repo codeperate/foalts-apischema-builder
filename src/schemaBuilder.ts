@@ -1,10 +1,13 @@
+import { IApiSchema } from '@foal/core';
 import { plainToClass } from 'class-transformer';
 import { ApiSchema } from './apischema';
-
-export type SchemaCollection = Record<string, ApiSchema>;
+export type IApiSchemaCollection = Record<string, IApiSchema>;
+export type SchemaCollection<T = any> = {
+    [K in keyof T]: ApiSchema<T[K]>;
+};
 export type PrimaryKeyCollection = Record<string, string[]>;
 
-export function parse(schema: SchemaCollection): SchemaCollection {
+export function parse(schema: IApiSchemaCollection): SchemaCollection {
     let res: SchemaCollection = {};
     for (const [key, value] of Object.entries(schema)) {
         res[key] = plainToClass(ApiSchema, value);
@@ -16,7 +19,7 @@ export function postParse(schema: SchemaCollection, primaryKeys: PrimaryKeyColle
     let res: SchemaCollection = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
-        res[key] = ApiSchema.parse<any>(value as any).omit([...omitFields, ...(primaryKey ? primaryKey : [])]) as any;
+        res[key] = ApiSchema.parse(value).omit([...omitFields, ...(primaryKey ? primaryKey : [])]) as any;
     }
     return res;
 }
@@ -25,7 +28,7 @@ export function patchParse(schema: SchemaCollection, primaryKeys: PrimaryKeyColl
     let res: SchemaCollection = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
-        res[key] = ApiSchema.parse<any>(value as any)
+        res[key] = ApiSchema.parse(value)
             .set('required', [])
             .omit([...omitFields, ...(primaryKey ? primaryKey : [])]);
     }
