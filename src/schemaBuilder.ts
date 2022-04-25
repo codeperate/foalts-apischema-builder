@@ -2,10 +2,10 @@ import { IApiSchema } from '@foal/core';
 import { plainToClass } from 'class-transformer';
 import { ApiSchema } from './apischema';
 export type IApiSchemaCollection = Record<string, IApiSchema>;
-export type SchemaCollection<T = any> = {
+export type SchemaCollection<T extends Record<any, any> = any> = {
     [K in keyof T]: ApiSchema<T[K]>;
 };
-export type SchemaCollectionNS<T extends Record<any, any>> = {
+export type SchemaCollectionNS<T extends Record<any, any> = any> = {
     [K in keyof T]: ApiSchema<InstanceType<T[K]>>;
 };
 export type PrimaryKeyCollection = Record<string, string[]>;
