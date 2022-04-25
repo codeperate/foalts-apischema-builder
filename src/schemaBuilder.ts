@@ -10,16 +10,16 @@ export type SchemaCollectionNS<T extends Record<any, any> = any> = {
 };
 export type PrimaryKeyCollection = Record<string, string[]>;
 
-export function parse(schema: IApiSchemaCollection): SchemaCollection | SchemaCollectionNS {
-    let res: SchemaCollection = {};
+export function parse(schema: IApiSchemaCollection): SchemaCollectionNS {
+    let res: SchemaCollectionNS = {};
     for (const [key, value] of Object.entries(schema)) {
         res[key] = plainToClass(ApiSchema, value);
     }
     return res;
 }
 
-export function postParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection | SchemaCollectionNS {
-    let res: SchemaCollection = {};
+export function postParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollectionNS {
+    let res: SchemaCollectionNS = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
         res[key] = ApiSchema.parse(value).omit([...omitFields, ...(primaryKey ? primaryKey : [])]) as any;
@@ -27,8 +27,8 @@ export function postParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyC
     return res;
 }
 
-export function patchParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollection | SchemaCollectionNS {
-    let res: SchemaCollection = {};
+export function patchParse(schema: IApiSchemaCollection, primaryKeys: PrimaryKeyCollection, omitFields: string[]): SchemaCollectionNS {
+    let res: SchemaCollectionNS = {};
     for (const [key, value] of Object.entries(schema)) {
         const primaryKey = primaryKeys[key];
         res[key] = ApiSchema.parse(value)
