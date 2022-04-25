@@ -5,6 +5,9 @@ export type IApiSchemaCollection = Record<string, IApiSchema>;
 export type SchemaCollection<T = any> = {
     [K in keyof T]: ApiSchema<T[K]>;
 };
+export type SchemaCollectionNS<T extends Record<any, any>> = {
+    [K in keyof T]: ApiSchema<InstanceType<T[K]>>;
+};
 export type PrimaryKeyCollection = Record<string, string[]>;
 
 export function parse(schema: IApiSchemaCollection): SchemaCollection {
